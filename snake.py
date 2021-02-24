@@ -11,11 +11,16 @@ from random import random
 class snakeApp(App):
 	def build(self):
 		a = GridLayout(cols = 50)
-		
-		list_a = [GridLayout() for _ in range(2500)]
-		for c in list_a:
-			CustomGraphics.SetBG(c, bg_color = [random(), random(), random(), 1])
-			a.add_widget(c)
+
+		list_a = [[GridLayout() for j in range(50)] for i in range(50)]
+		for b in list_a:
+			for c in b:
+				CustomGraphics.SetBG(c, bg_color = [0, 0, 0, 1])
+				a.add_widget(c)
+
+		for i in range(3):
+			for j in range(3):
+				CustomGraphics.SetBG(list_a[i][j], bg_color = [1, 0, 0, 1])
 		return a
 
 if __name__ == '__main__':
