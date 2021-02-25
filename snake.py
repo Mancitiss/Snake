@@ -33,10 +33,13 @@ class GameLoop():
 		
 
 class Snake():
-	direction = 'right'
-	length = 3
-	X_pos = 10
-	Y_pos = 10
+
+	def __init__(self, X_pos = 10, Y_pos = 10, length = 3, direction = 'right'):
+		self.X_pos = X_pos
+		self.Y_pos = Y_pos
+		self.length = length
+		self.direction = direction
+
 	def move(self, *args):
 		if (self.direction == 'right'):
 			self.X_pos += 1
@@ -57,7 +60,7 @@ class snakeApp(App):
 			for c in b:
 				CustomGraphics.SetBG(c, bg_color = [0, 0, 0, 1])
 				grid.add_widget(c)
-		main = Snake()
+		main = Snake(X_pos = 20, Y_pos = 20)
 		g = GameLoop()
 		Window.bind(on_key_down = partial(g.key_action, main))
 		Clock.schedule_interval(partial(g.update, main, list_a), 2)
