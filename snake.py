@@ -15,19 +15,20 @@ class GameLoop():
 
 	def key_action(self, instance, *args):
 		self.text = list(args)[1]
-		if (self.text == 273 or self.text == 119) and (instance.direction != 'down'):
+		if (self.text == 273 or self.text == 119) and (instance.old_direction != 'down'):
 			instance.direction = 'up'
-		elif (self.text == 274 or self.text == 115) and ((instance.direction != 'up')):
+		elif (self.text == 274 or self.text == 115) and ((instance.old_direction != 'up')):
 			instance.direction = 'down'
-		elif (self.text == 275 or self.text == 100) and (instance.direction != 'left'):
+		elif (self.text == 275 or self.text == 100) and (instance.old_direction != 'left'):
 			instance.direction = 'right'
-		elif (self.text == 276 or self.text == 97) and (instance.direction != 'right'):
+		elif (self.text == 276 or self.text == 97) and (instance.old_direction != 'right'):
 			instance.direction = 'left'
 		print ("got a key event: %s" % self.text)
 
 
 	def update(self, instance, grid_list, *args):
 		instance.move()
+		instance.old_direction = instance.direction
 		print(instance.X_pos, ' ', instance.Y_pos)
 		CustomGraphics.SetBG(grid_list[instance.Y_pos][instance.X_pos], bg_color = [0, 1, 0, 1])
 		CustomGraphics.SetBG(grid_list[instance.draw[1][1]][instance.draw[1][0]], bg_color = [1, 0, 0, 1])
@@ -36,10 +37,11 @@ class GameLoop():
 
 class Snake():
 
-	def __init__(self, X_pos = 10, Y_pos = 10, length = 3, direction = 'right'):
+	def __init__(self, X_pos = 10, Y_pos = 10, length = 3, direction = 'right', **kwargs):
 		self.X_pos = X_pos
 		self.Y_pos = Y_pos
 		self.length = length
+		self.old_direction = 'right'
 		self.direction = direction
 		self.draw = [(self.X_pos, self.Y_pos) for _ in range(self.length+1)]
 		if (self.direction == 'right'):
