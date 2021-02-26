@@ -26,10 +26,12 @@ class GameLoop():
 		print ("got a key event: %s" % self.text)
 
 
-	def update(self, instance, grid, *args):
+	def update(self, instance, grid_list, *args):
 		instance.move()
 		print(instance.X_pos, ' ', instance.Y_pos)
-		CustomGraphics.SetBG(grid[instance.Y_pos][instance.X_pos], bg_color = [1, 0, 0, 1])
+		CustomGraphics.SetBG(grid_list[instance.Y_pos][instance.X_pos], bg_color = [0, 1, 0, 1])
+		CustomGraphics.SetBG(grid_list[instance.draw[1][1]][instance.draw[1][0]], bg_color = [1, 0, 0, 1])
+		CustomGraphics.SetBG(grid_list[instance.draw[-1][1]][instance.draw[-1][0]], bg_color = [0, 0, 0, 1])
 		
 
 class Snake():
@@ -39,20 +41,36 @@ class Snake():
 		self.Y_pos = Y_pos
 		self.length = length
 		self.direction = direction
+		self.draw = [(self.X_pos, self.Y_pos) for _ in range(self.length+1)]
+		if (self.direction == 'right'):
+			for i in range(1, len(self.draw)):
+				self.draw[i] = ((self.draw[i][0] - i) % 50, self.draw[i][1] )
+		elif (self.direction == 'left'):
+			for i in range(1, len(self.draw)):
+				self.draw[i] = ((self.draw[i][0] + i) % 50, self.draw[i][1] )
+		elif (self.direction == 'up'):
+			for i in range(1, len(self.draw)):
+				self.draw[i] = (self.draw[i][0] , (self.draw[i][1] + i) % 50)
+		elif (self.direction == 'down'):
+			for i in range(1, len(self.draw)):
+				self.draw[i] = (self.draw[i][0] , (self.draw[i][1] - i) % 50)
 
 	def move(self, *args):
+		self.draw[1:] = self.draw[:-1]
 		if (self.direction == 'right'):
-			self.X_pos += 1
+			self.X_pos = (self.X_pos + 1) % 50
 		elif (self.direction == 'left'):
-			self.X_pos -= 1
+			self.X_pos = (self.X_pos - 1) % 50
 		elif (self.direction == 'up'):
-			self.Y_pos -= 1
+			self.Y_pos = (self.Y_pos - 1) % 50
 		elif (self.direction == 'down'):
-			self.Y_pos += 1
+			self.Y_pos = (self.Y_pos + 1) % 50
+		self.draw[0] = (self.X_pos, self.Y_pos)
 
 
 class snakeApp(App):
 	def build(self):
+		main = Snake(X_pos = 20, Y_pos = 20)
 		grid = GridLayout(cols = 50)
 
 		list_a = [[GridLayout() for j in range(50)] for i in range(50)]
@@ -60,10 +78,14 @@ class snakeApp(App):
 			for c in b:
 				CustomGraphics.SetBG(c, bg_color = [0, 0, 0, 1])
 				grid.add_widget(c)
-		main = Snake(X_pos = 20, Y_pos = 20)
+
+		CustomGraphics.SetBG(list_a[main.Y_pos][main.X_pos], bg_color = [0, 1, 0, 1])
+		for i in range(1, len(main.draw) -1):
+			CustomGraphics.SetBG(list_a[main.draw[i][1]][main.draw[i][0]], bg_color = [1, 0, 0, 1])
+
 		g = GameLoop()
 		Window.bind(on_key_down = partial(g.key_action, main))
-		Clock.schedule_interval(partial(g.update, main, list_a), 2)
+		Clock.schedule_interval(partial(g.update, main, list_a), 0)
 		
 		return grid
 
